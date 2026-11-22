@@ -1,17 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { faMagnifyingGlass, faServer } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faServer, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useServices } from "@/hooks/useServices";
 import { filterGroups, groupByCategory, NO_FILTERS, type ServiceFilters } from "@/lib/filters";
 import { ServiceSection } from "./ServiceSection";
 import { ServicesHeader } from "./ServicesHeader";
 import { ServicesSkeleton } from "./ServicesSkeleton";
+import { useServices } from "./useServices";
 
 /** The services page: loads the list, owns the filter and collapse state, and lays out the header and sections. */
 export function ServicesView() {
-  const { data, failed } = useServices();
+  const { data, error, refresh } = useServices();
   const [filters, setFilters] = useState<ServiceFilters>(NO_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
@@ -52,7 +52,17 @@ export function ServicesView() {
   const filterKey = `${filters.category}|${filters.status}|${filters.query.trim().toLowerCase()}`;
 
   function renderContent() {
-    if (failed) return <p className="py-20 text-center text-muted">Couldn&apos;t load services. Try refreshing.</p>;
+    if (error) {
+      return (
+        <EmptyState
+          icon={faTriangleExclamation}
+          title="Couldn't load services"
+          description={error}
+          className="mt-6 mb-3"
+          action={{ label: "Refresh", onClick: refresh }}
+        />
+      );
+    }
     if (!data) return <ServicesSkeleton />;
 
     if (total === 0) {
@@ -61,7 +71,7 @@ export function ServicesView() {
           icon={faServer}
           title="No services detected"
           description="Add a proxy host in Nginx Proxy Manager and it will show up here automatically."
-          className="mt-3"
+          className="mt-6 mb-3"
         />
       );
     }
@@ -72,16 +82,8 @@ export function ServicesView() {
           icon={faMagnifyingGlass}
           title="No services match"
           description="Try a different search or filter."
-          className="mt-3"
-          action={
-            <button
-              type="button"
-              onClick={() => setFilters(NO_FILTERS)}
-              className="cursor-pointer rounded-full border border-edge px-4 py-1.5 text-sm font-medium text-muted transition hover:border-faint hover:text-fg"
-            >
-              Clear filters
-            </button>
-          }
+          className="mt-6 mb-3"
+          action={{ label: "Clear filters", onClick: () => setFilters(NO_FILTERS) }}
         />
       );
     }
@@ -104,7 +106,7 @@ export function ServicesView() {
   return (
     <div className="mx-auto max-w-7xl px-7 pb-24">
       <ServicesHeader
-        loading={!data && !failed}
+        loading={!data && !error}
         total={total}
         groups={groups}
         visible={visible}
@@ -116,9 +118,7 @@ export function ServicesView() {
         onReset={reset}
       />
 
-      <main>
-        {renderContent()}
-      </main>
+      <main>{renderContent()}</main>
     </div>
   );
 }

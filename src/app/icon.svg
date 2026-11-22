@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The Media category's accent bar (hue 330, as in the section headings) beside an "S", on the app background. -->
+  <rect width="32" height="32" rx="7" fill="#18181b"/>
+  <!-- The bar and S are drawn 22 tall with their centre at (16.45, 16); this scales them to 24 tall, centred in the icon. -->
+  <g transform="translate(16 16) scale(1.0909) translate(-16.45 -16)">
+    <rect x="8" y="5" width="3.5" height="22" rx="1.75" fill="hsl(330 65% 62%)"/>
+    <path
+      transform="translate(-3.6 0)"
+      d="M26.8 9.2C26.3 7.5 24.9 6.5 23.2 6.5C21.1 6.5 19.6 7.9 19.6 10.6C19.6 14.4 27 17.6 27 21.4C27 24.1 25.5 25.5 23.4 25.5C21.7 25.5 20.3 24.5 19.8 22.8"
+      fill="none"
+      stroke="#f4f4f5"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>

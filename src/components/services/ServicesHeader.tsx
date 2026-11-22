@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAnglesDown, faAnglesUp } from "@fortawesome/free-solid-svg-icons";
+import { faAnglesDown, faAnglesUp, faGear } from "@fortawesome/free-solid-svg-icons";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { cn } from "@/lib/cn";
 import type { ServiceFilters } from "@/lib/filters";
@@ -50,7 +51,7 @@ export function ServicesHeader({
             type="button"
             onClick={onReset}
             title="Show all services"
-            className="block h-12 origin-center transform-gpu cursor-pointer text-[26px] leading-12 font-bold tracking-tight transition-[scale,color] duration-300 ease-out select-none will-change-transform hover:scale-105 hover:text-fg/80"
+            className="block h-12 cursor-pointer text-[26px] leading-12 font-bold tracking-tight select-none"
           >
             Services
           </button>
@@ -62,6 +63,14 @@ export function ServicesHeader({
           className="min-w-50 flex-[1_1_280px]"
         />
         <StatusFilter value={filters.status} onChange={(status) => onFiltersChange({ status })} />
+        <Link
+          href="/settings"
+          title="Settings"
+          aria-label="Settings"
+          className="grid size-12 shrink-0 place-items-center rounded-control border border-edge bg-surface text-muted transition hover:border-muted hover:bg-surface-2 hover:text-fg"
+        >
+          <FontAwesomeIcon icon={faGear} />
+        </Link>
       </div>
 
       {loading && <CategoryNavSkeleton />}
@@ -69,17 +78,22 @@ export function ServicesHeader({
         <CategoryNav groups={groups} visible={visible} value={filters.category} onChange={(category) => onFiltersChange({ category })} />
       )}
 
+      {/* While loading, keep the button's space (empty) so the skeleton below sits where the real content will. */}
+      {loading && <div className="h-5" aria-hidden />}
+      {/* Nothing to collapse after a failed load or with no services; stays (disabled) when a filter matches nothing. */}
+      {!loading && total > 0 && (
       <div className="flex justify-end">
         <button
           type="button"
           onClick={onToggleAll}
           disabled={!canToggleAll}
-          className="flex cursor-pointer items-center gap-2 px-1 text-sm whitespace-nowrap text-muted transition-colors hover:text-fg disabled:cursor-default disabled:opacity-50 disabled:hover:text-muted"
+          className="flex cursor-pointer items-center gap-2 pr-3 pl-1 text-sm whitespace-nowrap text-muted transition-colors hover:text-fg disabled:cursor-default disabled:opacity-50 disabled:hover:text-muted"
         >
           <FontAwesomeIcon icon={allCollapsed ? faAnglesDown : faAnglesUp} />
           {allCollapsed ? "Expand all" : "Collapse all"}
         </button>
       </div>
+      )}
     </header>
   );
 }
