@@ -104,7 +104,7 @@ export function ServicesView() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-7 pb-24">
+    <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-7">
       <ServicesHeader
         loading={!data && !error}
         total={total}

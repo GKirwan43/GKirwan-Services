@@ -14,12 +14,15 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
+  fullWidth,
 }: {
   /** Accessible name for the group. */
   label: string;
   options: SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  /** Stretch the buttons to share the full width. */
+  fullWidth?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [pill, setPill] = useState<{ left: number; width: number; animate: boolean } | null>(null);
@@ -50,6 +53,7 @@ export function SegmentedControl<T extends string>({
           aria-label={option.icon ? option.label : undefined}
           className={cn(
             "relative z-1 flex cursor-pointer items-center rounded-control-inner px-3.5 text-sm font-medium transition-colors duration-300",
+            fullWidth && "flex-1 justify-center",
             option.value === value ? "text-bg" : "text-muted hover:text-fg",
           )}
         >

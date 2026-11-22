@@ -9,7 +9,7 @@ export interface NpmConfig {
   password: string;
 }
 
-export interface AppConfig {
+interface AppConfig {
   npm: NpmConfig;
 }
 

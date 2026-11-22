@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 
-export type NpmConnection = { url: string; email: string; password: string };
+type NpmConnection = { url: string; email: string; password: string };
 
 /** The outcome of the last test or save, shown under the form. A failed save replaces the test result. */
-export type ConnectionResult =
+type ConnectionResult =
   | { status: "idle" }
   | { status: "testing" }
   | { status: "ok"; url: string; hosts: number }
