@@ -97,7 +97,7 @@ export function ServicesHeader({
         {loading && <div className="h-5" aria-hidden />}
         {/* Nothing to collapse after a failed load or with no services; stays (disabled) when a filter matches nothing. */}
         {!loading && total > 0 && (
-          <div className="flex items-center justify-end max-sm:justify-between max-sm:py-1">
+          <div className="flex items-center justify-end max-sm:justify-between max-sm:py-2">
             <button type="button" onClick={() => setSheetOpen(true)} className={cn(textButtonClass, "sm:hidden")}>
               <FontAwesomeIcon icon={faFilter} />
               Filters
