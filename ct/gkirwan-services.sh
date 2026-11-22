@@ -7,7 +7,7 @@ source "$_cs_boot" 2>/dev/null || source <(curl -fsSL "${COMMUNITY_SCRIPTS_CORE_
 # License: MIT
 # Source: https://github.com/GKirwan43/GKirwan-Services
 
-APP="GKirwan Services"
+APP="GKirwan-Services"
 var_tags="${var_tags:-nextjs;web}"
 var_cpu="${var_cpu:-2}"
 var_ram="${var_ram:-2048}"
@@ -37,11 +37,12 @@ function update_script() {
     systemctl stop gkirwan-services
     msg_ok "Stopped Service"
 
-    create_backup /opt/gkirwan-services/.env
     CLEAN_INSTALL=1 fetch_and_deploy_gh_release "gkirwan-services" "GKirwan43/GKirwan-Services" "tarball"
-    restore_backup
 
     msg_info "Updating ${APP}"
+    # Installs from before setup existed have no data dir; the saved config lives there and survives updates.
+    mkdir -p -m 700 /var/lib/gkirwan-services
+    grep -q '^DATA_DIR=' /opt/gkirwan-services.env || echo "DATA_DIR=/var/lib/gkirwan-services" >>/opt/gkirwan-services.env
     cd /opt/gkirwan-services
     export NEXT_TELEMETRY_DISABLED=1
     $STD npm ci
@@ -66,3 +67,4 @@ msg_ok "Completed successfully!\n"
 echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
 echo -e "${INFO}${YW}Access it using the following URL:${CL}"
 echo -e "${GATEWAY}${BGN}http://${IP}:3000${CL}"
+echo -e "${INFO}${YW}Open it once to connect it to Nginx Proxy Manager.${CL}"

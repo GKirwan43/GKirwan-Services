@@ -34,9 +34,6 @@
   --color-status-running: var(--color-green-400);
   --color-status-stopped: var(--color-red-400);
   --color-status-unknown: var(--color-zinc-500);
-
-  --color-warning: var(--color-amber-400);
-  --color-warning-fg: var(--color-amber-200);
 }
 
 /* The responsive grid of service tiles. */
@@ -49,6 +46,8 @@
 @layer base {
   html {
     @apply h-full antialiased;
+    /* Always reserve the scrollbar's space, so the page doesn't shift sideways when it appears (e.g. collapsing sections). */
+    scrollbar-gutter: stable;
   }
 
   body {

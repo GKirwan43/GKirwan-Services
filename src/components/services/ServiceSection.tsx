@@ -29,7 +29,7 @@ export function ServiceSection({
         className="group flex w-full cursor-pointer items-stretch gap-4 py-3 pr-3 text-left select-none"
       >
         <span
-          className="w-1.5 shrink-0 rounded-full transition-[margin,width] duration-200 ease-out group-hover:-my-0.5 group-hover:w-[7px]"
+          className="w-1.5 shrink-0 rounded-full"
           style={{ backgroundColor: `hsl(${category.hue} 65% 62%)` }}
         />
         <span className="min-w-0 flex-1 transition-transform duration-200 ease-out group-hover:translate-x-1">
