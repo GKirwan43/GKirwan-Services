@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# GKirwan Services - Proxmox LXC installer.
-# Run as root on the Proxmox VE host:
-#   bash -c "$(curl -fsSL https://raw.githubusercontent.com/GKirwan43/gkirwan-services/main/scripts/proxmox-install.sh)"
+# GKirwan Services - Proxmox LXC installer (private repo).
+# Copy this file to the Proxmox VE host, then run as root:
+#   bash proxmox-install.sh
+#
+# The repo is private, so you need a read-only GitHub fine-grained token
+# (Repository: GKirwan-Services only, Contents: Read-only). You are prompted
+# for it, or set var_token first.
 #
 # Override defaults by setting variables first, e.g.:
-#   var_cpu=4 var_ram=4096 var_storage=local-zfs bash -c "$(curl ...)"
+#   var_cpu=4 var_ram=4096 var_storage=local-zfs bash proxmox-install.sh
 #
 # Updating later: run `update` inside the container, or from the host:
 #   pct exec <CTID> -- update
@@ -13,7 +17,8 @@ set -Eeuo pipefail
 
 # ---------- Settings (override with environment variables) ----------
 APP="gkirwan-services"
-var_repo="${var_repo:-https://github.com/GKirwan43/gkirwan-services.git}"
+var_repo="${var_repo:-github.com/GKirwan43/GKirwan-Services.git}"   # no https:// prefix
+var_token="${var_token:-}"
 var_branch="${var_branch:-main}"
 var_port="${var_port:-3000}"
 
@@ -35,6 +40,16 @@ fail() { echo -e "\e[31m[x]\e[0m $*" >&2; exit 1; }
 # ---------- Host checks ----------
 [ "$(id -u)" -eq 0 ] || fail "Run as root on the Proxmox host."
 command -v pct >/dev/null && command -v pveam >/dev/null || fail "pct/pveam not found. Run this on a Proxmox VE host."
+command -v git >/dev/null || fail "git is required on the host (apt install git)."
+
+if [ -z "$var_token" ]; then
+  read -rsp "GitHub read-only token for the private repo: " var_token </dev/tty
+  echo
+fi
+[ -n "$var_token" ] || fail "A GitHub token is required (the repo is private)."
+CLONE_URL="https://x-access-token:${var_token}@${var_repo}"
+git ls-remote "$CLONE_URL" HEAD >/dev/null 2>&1 \
+  || fail "Cannot read the repo with that token. Check its repository access and Contents: Read permission."
 
 [ -n "$var_ctid" ] || var_ctid="$(pvesh get /cluster/nextid)"
 pct status "$var_ctid" >/dev/null 2>&1 && fail "Container $var_ctid already exists."
@@ -83,7 +98,7 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
 cat > "$WORK/config" <<EOF
-REPO="$var_repo"
+REPO="$CLONE_URL"
 BRANCH="$var_branch"
 PORT="$var_port"
 APP_DIR="/opt/$APP"
@@ -163,6 +178,7 @@ apt-get install -y nodejs
 
 mkdir -p /etc/$APP
 mv /tmp/gk/config /etc/$APP/config
+chmod 600 /etc/$APP/config
 mv /tmp/gk/app.env /etc/$APP/app.env
 install -m 755 /tmp/gk/update /usr/local/bin/update
 mv /tmp/gk/service /etc/systemd/system/$APP.service
